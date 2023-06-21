@@ -95,6 +95,11 @@ const startMenu = () => {
         });
 };
 
+
+
+
+
+
 const viewDepartments = async () => {
     try {
 
@@ -110,10 +115,12 @@ const viewDepartments = async () => {
 
 
 
+
+
 const viewRoles = async () => {
     try {
 
-        const roles = await getRoles();
+        const [roles] = await getRoles();
         console.table(roles);
 
     } catch (error) {
@@ -125,18 +132,18 @@ const viewRoles = async () => {
 
 
 
-const viewEmployees = () => {
+
+
+const viewEmployees = async () => {
     try {
-        findAllEmployees()
-            .then(([rows]) => {
-                let employees = rows;
-                console.log("\n");
+
+        const [employees] = await findAllEmployees();
                 console.table(employees);
-            })
-            .then(() => loadPrompts());
+
     } catch (error) {
         console.error('Error occurred:', error);
-        loadPrompts();
     }
+
+    startMenu();
 };
 
