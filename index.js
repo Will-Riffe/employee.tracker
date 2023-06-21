@@ -215,19 +215,32 @@ const addRole = async () => {
 
 const addEmployee = async () => {
     try {
+
+
+
       const [roles] = await getRoles();
       const roleChoices = roles.map(({ id, title }) => ({
         name: title,
         value: id,
       }));
   
-      const [employees] = await db.findAllEmployees();
+
+
+
+
+      const [employees] = await findAllEmployees();
       const managerChoices = employees.map(({ id, forename, surname }) => ({
         name: `${forename} ${surname}`,
         value: id,
       }));
+
+
+
+
       managerChoices.unshift({ name: "None", value: null });
   
+
+
       const answers = await inquirer.prompt([
         {
           type: "input",
@@ -254,7 +267,7 @@ const addEmployee = async () => {
       ]);
   
 
-      await db.createEmployee(answers.forename, answers.surname, answers.role_id, answers.manager_id);
+      await createEmployee(answers.forename, answers.surname, answers.role_id, answers.manager_id);
       console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
     
     
@@ -265,3 +278,60 @@ const addEmployee = async () => {
     startMenu();
   };
   
+
+
+
+
+  const updateEmployeeRole = async () => {
+    try {
+
+
+
+        const [employees] = await findAllEmployees();
+        const employeeChoices = employees.map(({ id, forename, surname }) => ({
+            name: `${forename} ${surname}`,
+            value: id
+        }));
+
+
+
+        const [roles] = await getRoles();
+        const roleChoices = roles.map(({ id, title }) => ({
+            name: title,
+            value: id
+        }));
+
+
+
+        const { employeeId, roleId } = await inquirer.prompt([
+            {
+                type: "list",
+                name: "employeeId",
+                message: "Who's changing position?",
+                choices: employeeChoices
+            },
+            {
+                type: "list",
+                name: "roleId",
+                message: "What's their new role?",
+                choices: roleChoices
+            }
+        ]);
+
+        await updateEmployeeRole(employeeId, roleId);
+
+        const selectedEmployee = employees.find(employee => employee.id === employeeId);
+        const selectedRole = roles.find(role => role.id === roleId);
+        const { forename, surname } = selectedEmployee;
+        const { title } = selectedRole;
+
+        console.log(`${forename} ${surname}'s role is now a '${title}'.`);
+    
+    } catch (error) {
+        console.error('Error occurred:', error);
+    }
+
+    startMenu();
+};
+
+
