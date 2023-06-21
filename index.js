@@ -94,3 +94,49 @@ const startMenu = () => {
             console.error('Error occurred:', error);
         });
 };
+
+const viewDepartments = async () => {
+    try {
+
+        const [departments] = await findAllDepartments();
+        console.table(departments);
+
+    } catch (error) {
+        console.error("Error: ", error);
+    }
+
+    startMenu();
+};
+
+
+
+const viewRoles = async () => {
+    try {
+
+        const roles = await getRoles();
+        console.table(roles);
+
+    } catch (error) {
+        console.error("Error occurred:", error);
+    }
+
+    startMenu();
+};
+
+
+
+const viewEmployees = () => {
+    try {
+        findAllEmployees()
+            .then(([rows]) => {
+                let employees = rows;
+                console.log("\n");
+                console.table(employees);
+            })
+            .then(() => loadPrompts());
+    } catch (error) {
+        console.error('Error occurred:', error);
+        loadPrompts();
+    }
+};
+
