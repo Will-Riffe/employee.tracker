@@ -5,7 +5,7 @@ CREATE DATABASE IF NOT EXISTS employee_tracker;
 USE employee_tracker;
 
 -- Employee Table
-CREATE TABLE IF NOT EXISTS employee (
+CREATE TABLE IF NOT EXISTS employees (
   id INT AUTO_INCREMENT PRIMARY KEY,
   forename VARCHAR(50),
   surname VARCHAR(50),
@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS employee (
 );
 
 -- Dept. Table
-CREATE TABLE IF NOT EXISTS department (
+CREATE TABLE IF NOT EXISTS departments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(50)
 );
 
 -- Role Table
-CREATE TABLE IF NOT EXISTS role (
+CREATE TABLE IF NOT EXISTS roles (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(50) NOT NULL,
   salary DECIMAL(10, 2) NOT NULL,

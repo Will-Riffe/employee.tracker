@@ -23,7 +23,7 @@ async function dbConnect() {
 
         connectCorrect();
 
-    
+
     } catch (error) {
         console.error('CONNECTION ERROR:', error);
     }
@@ -138,7 +138,7 @@ const viewEmployees = async () => {
     try {
 
         const [employees] = await findAllEmployees();
-                console.table(employees);
+        console.table(employees);
 
     } catch (error) {
         console.error('Error occurred:', error);
@@ -147,3 +147,64 @@ const viewEmployees = async () => {
     startMenu();
 };
 
+
+
+
+
+const addDepartment = async () => {
+    try {
+        const { name } = await inquirer.prompt([
+            {
+                type: "input",
+                name: "name",
+                message: "What is this Department Called?"
+            }
+        ]);
+
+        await createDepartment(name);
+        console.log(`Department '${name}' established.`);
+
+    } catch (error) {
+        console.error('Error occurred:', error);
+    }
+
+    startMenu();
+};
+
+
+
+
+
+const addRole = async () => {
+    try {
+        const [departments] = await findAllDepartments();
+        const { title, salary, department_id } = await inquirer.prompt([
+            {
+                type: "input",
+                name: "title",
+                message: "What is this role called?",
+            },
+            {
+                type: "number",
+                name: "salary",
+                message: "How much does this role pay?",
+            },
+            {
+                type: "list",
+                name: "department_id",
+                message: "Choose the department for this role.",
+                choices: departments,
+            },
+        ]);
+
+
+        await createRole({ title, salary, department_id });
+        console.log(`The role of '${title}' has been established`);
+
+
+    } catch (error) {
+        console.error("Error occurred:", error);
+    }
+
+    startMenu();
+};
