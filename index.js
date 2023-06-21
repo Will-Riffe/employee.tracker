@@ -99,7 +99,7 @@ const startMenu = () => {
 
 
 
-
+// Displays available Dept's
 const viewDepartments = async () => {
     try {
 
@@ -116,7 +116,7 @@ const viewDepartments = async () => {
 
 
 
-
+// Displays available Roles
 const viewRoles = async () => {
     try {
 
@@ -133,7 +133,7 @@ const viewRoles = async () => {
 
 
 
-
+// Displays available Employees
 const viewEmployees = async () => {
     try {
 
@@ -150,7 +150,7 @@ const viewEmployees = async () => {
 
 
 
-
+// Allows the user to add a dept
 const addDepartment = async () => {
     try {
         const { name } = await inquirer.prompt([
@@ -174,7 +174,7 @@ const addDepartment = async () => {
 
 
 
-
+// Allows the user to add a new Role
 const addRole = async () => {
     try {
         const [departments] = await findAllDepartments();
@@ -212,7 +212,7 @@ const addRole = async () => {
 
 
 
-
+// Allows the user to add a new Employee
 const addEmployee = async () => {
     try {
 
@@ -281,7 +281,7 @@ const addEmployee = async () => {
 
 
 
-
+// Allows user to update the Employee's role
   const updateEmployeeRole = async () => {
     try {
 
@@ -335,3 +335,4 @@ const addEmployee = async () => {
 };
 
 
+startMenu();
