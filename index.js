@@ -208,3 +208,60 @@ const addRole = async () => {
 
     startMenu();
 };
+
+
+
+
+
+const addEmployee = async () => {
+    try {
+      const [roles] = await getRoles();
+      const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id,
+      }));
+  
+      const [employees] = await db.findAllEmployees();
+      const managerChoices = employees.map(({ id, forename, surname }) => ({
+        name: `${forename} ${surname}`,
+        value: id,
+      }));
+      managerChoices.unshift({ name: "None", value: null });
+  
+      const answers = await inquirer.prompt([
+        {
+          type: "input",
+          name: "forename",
+          message: "Enter the person's first name:",
+        },
+        {
+          type: "input",
+          name: "surname",
+          message: "Enter the person's last name:",
+        },
+        {
+          type: "list",
+          name: "role_id",
+          message: "What is their role here?",
+          choices: roleChoices,
+        },
+        {
+          type: "list",
+          name: "manager_id",
+          message: "Who is their manager?",
+          choices: managerChoices,
+        },
+      ]);
+  
+
+      await db.createEmployee(answers.forename, answers.surname, answers.role_id, answers.manager_id);
+      console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
+    
+    
+    } catch (error) {
+      console.error("Error occurred:", error);
+    }
+  
+    startMenu();
+  };
+  
