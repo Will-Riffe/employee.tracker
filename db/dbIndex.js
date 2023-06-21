@@ -12,3 +12,16 @@ const viewDepartments = async () => {
 };
 
 
+
+const viewRoles = async () => {
+    try {
+
+        const roles = await getRoles();
+        console.table(roles);
+
+    } catch (error) {
+        console.error("Error occurred:", error);
+    }
+
+    startMenu();
+};
