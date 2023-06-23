@@ -1,33 +1,29 @@
--- Instantiate employee_tracker database
 CREATE DATABASE IF NOT EXISTS employee_tracker;
 
--- Switch to the new database
 USE employee_tracker;
 
--- Employee Table
-CREATE TABLE IF NOT EXISTS employees (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  forename VARCHAR(50),
-  surname VARCHAR(50),
-  role_id INT NOT NULL,
-  manager_id INT,
-  FOREIGN KEY (role_id) REFERENCES role(id),
-  FOREIGN KEY (manager_id) REFERENCES employee(personal_id)
+CREATE TABLE department (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(30) UNIQUE NOT NULL
 );
 
--- Dept. Table
-CREATE TABLE IF NOT EXISTS departments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50)
+CREATE TABLE role (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(30) UNIQUE NOT NULL,
+  salary DECIMAL UNSIGNED NOT NULL,
+  department_id INT UNSIGNED NOT NULL,
+  INDEX dep_ind (department_id),
+  CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
--- Role Table
-CREATE TABLE IF NOT EXISTS roles (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(50) NOT NULL,
-  salary DECIMAL(10, 2) NOT NULL,
-  department_id INT NOT NULL,
-  FOREIGN KEY (department_id) REFERENCES department(id)
+CREATE TABLE employee (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  surname VARCHAR(30) NOT NULL,
+  forename VARCHAR(30) NOT NULL,
+  role_id INT UNSIGNED NOT NULL,
+  INDEX role_ind (role_id),
+  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
+  manager_id INT UNSIGNED,
+  INDEX man_ind (manager_id),
+  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
-
-
