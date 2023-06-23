@@ -1,0 +1,25 @@
+{
+  "name": "12.employee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Will-Riffe/employee.tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Will-Riffe/employee.tracker/issues"
+  },
+  "homepage": "https://github.com/Will-Riffe/employee.tracker#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "inquirer": "^9.2.7",
+    "mysql2": "^3.4.0"
+  }
+}
