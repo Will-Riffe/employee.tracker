@@ -1,4 +1,3 @@
-const { prompt } = require("inquirer");
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
@@ -18,4 +17,4 @@ connection.connect((err) => {
 });
 
 
-module.exports = prompt, connection;
+module.exports = connection;

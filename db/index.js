@@ -5,8 +5,6 @@ class DB {
     this.connection = connection;
   }
 
-
-
   getDepartments() {
     const query = "SELECT department.id, department.name FROM department;";
     return this.connection.promise().query(query);
@@ -83,9 +81,7 @@ class DB {
     const query = "UPDATE employee SET role_id = ? WHERE id = ?";
     return this.connection.promise().query(query, [roleId, employeeId]);
   }
-
 }
-
 
 const db = new DB();
 module.exports = db;

@@ -172,7 +172,7 @@ function addRole() {
 
 
 
-// Allows the user to add a new Employee                        check
+// Allows the user to add a new Employee
 function addEmployee() {
     try {
         const roles = db.getRoles()[0];
