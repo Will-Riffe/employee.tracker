@@ -1,4 +1,4 @@
-const inquirer = require("inquirer");
+const { prompt } = require("inquirer");
 const db = require("./db")
 
 
@@ -9,8 +9,7 @@ const db = require("./db")
 
 // Le start menu and choices
 const startMenu = () => {
-    inquirer
-        .prompt([
+        prompt([
             {
                 type: 'list',
                 name: 'choice',
@@ -82,7 +81,7 @@ startMenu();
       These two functions are called upon in a couple of others
       so I've put them here and called them in a few of their 
       respective functions below
-*/
+
 const [roles] = await db.getRoles();
 const roleChoices = roles.map(({ id, title }) => ({
     name: title,
@@ -99,7 +98,7 @@ const employeeChoices = employees.map(({ id, forename, surname }) => ({
 
 
 
-
+*/
 
 
 
@@ -156,7 +155,7 @@ const viewEmployees = async () => {
 // Allows the user to add a dept
 const addDepartment = async () => {
     try {
-        const { name } = await inquirer.prompt([
+        const { name } = await prompt([
             {
                 type: "input",
                 name: "name",
@@ -181,7 +180,7 @@ const addDepartment = async () => {
 const addRole = async () => {
     try {
         const [departments] = await db.getDepartments();
-        const { title, salary, department_id } = await inquirer.prompt([
+        const { title, salary, department_id } = await prompt([
             {
                 type: "input",
                 name: "title",
@@ -228,7 +227,7 @@ const addEmployee = async () => {
         roster.unshift({ name: "None", value: null });
 
 
-        const answers = await inquirer.prompt([
+        const answers = await prompt([
             {
                 type: "input",
                 name: "forename",
@@ -277,7 +276,7 @@ const updateEmpRole = async () => {
         employeeChoices();
 
 
-        const { employeeId, roleId } = await inquirer.prompt([
+        const { employeeId, roleId } = await prompt([
             {
                 type: "list",
                 name: "employeeId",
