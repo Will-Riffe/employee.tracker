@@ -1,21 +1,19 @@
 const connection = require("../config/connection.js");
 
 class DB {
-    constructor() {
-      this.connection = connection;
-    }
+  constructor() {
+    this.connection = connection;
+  }
 
 
 
-    getDepartments() {
-      const query = "SELECT department.id, department.name FROM department;";
-      return this.connection.promise().query(query);
-    }
-    
+  getDepartments() {
+    const query = "SELECT department.id, department.name FROM department;";
+    return this.connection.promise().query(query);
+  }
 
-
-    getRoles() {
-        const query = `
+  getRoles() {
+    const query = `
           SELECT
             role.id,
             role.title,
@@ -25,10 +23,8 @@ class DB {
             role
             LEFT JOIN department ON role.department_id = department.id;
         `;
-        return this.connection.promise().query(query);
-      }
-
-
+    return this.connection.promise().query(query);
+  }
 
   getEmployees() {
     const query = `
@@ -49,21 +45,15 @@ class DB {
     return this.connection.promise().query(query);
   }
 
-
-
   addDept(department) {
     const query = "INSERT INTO department SET ?";
     return this.connection.promise().query(query, department);
   }
 
-
-
   roleAdder(role) {
     const query = "INSERT INTO role SET ?";
     return this.connection.promise().query(query, role);
   }
-
-
 
   findAllPossibleManagers(employeeId) {
     const query = `
@@ -93,7 +83,7 @@ class DB {
     const query = "UPDATE employee SET role_id = ? WHERE id = ?";
     return this.connection.promise().query(query, [roleId, employeeId]);
   }
-  
+
 }
 
 
