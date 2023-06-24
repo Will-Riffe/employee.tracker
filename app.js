@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const db = require("./db");
+const connection = require("./connection");
 
 // Le start menu and choices
 const startMenu = () => {
