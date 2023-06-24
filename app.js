@@ -1,5 +1,6 @@
 // Activate: connection.js
-const { connection } = require('./connection');
+const inquirer = require("inquirer");
+const connection = require('./connection');
 
 
 function letsGO() {
