@@ -54,7 +54,7 @@ const startMenu = () => {
         break;
   
       case "Update Employee Role":
-        updateEmployeeRole();
+        updateEmpRole();
         break;
   
       case "Quit":
@@ -70,10 +70,10 @@ const startMenu = () => {
 
 
 
-// Displays available Dept's
+// Displays available Dept's                            check
 const viewDepartments = async () => {
     try {
-        const [departments] = await findAllDepartments();
+        const [departments] = await getDepartments();
         console.table(departments);
 
     } catch (error) {
@@ -87,7 +87,7 @@ const viewDepartments = async () => {
 
 
 
-// Displays available Roles
+// Displays available Roles                              check
 const viewRoles = async () => {
     try {
 
@@ -98,30 +98,30 @@ const viewRoles = async () => {
         console.error("Error occurred:", error);
     }
 
-    startMenu();
+    return startMenu().then(() => {});
 };
 
 
 
 
-// Displays available Employees
+// Displays available Employees                             check
 const viewEmployees = async () => {
     try {
 
-        const [employees] = await findAllEmployees();
+        const [employees] = await getEmployees();
         console.table(employees);
 
     } catch (error) {
         console.error('Error occurred:', error);
     }
 
-    startMenu();
+    return startMenu().then(() => {});
 };
 
 
 
 
-// Allows the user to add a dept
+// Allows the user to add a dept                             check
 const addDepartment = async () => {
     try {
         const { name } = await inquirer.prompt([
@@ -132,23 +132,23 @@ const addDepartment = async () => {
             }
         ]);
 
-        await createDepartment(name);
+        await addDept(name);
         console.log(`Department '${name}' established.`);
 
     } catch (error) {
         console.error('Error occurred:', error);
     }
 
-    startMenu();
+    return startMenu().then(() => {});
 };
 
 
 
 
-// Allows the user to add a new Role
+// Allows the user to add a new Role                          check
 const addRole = async () => {
     try {
-        const [departments] = await findAllDepartments();
+        const [departments] = await getDepartments();
         const { title, salary, department_id } = await inquirer.prompt([
             {
                 type: "input",
@@ -169,7 +169,9 @@ const addRole = async () => {
         ]);
 
 
-        await createRole({ title, salary, department_id });
+
+
+        await roleAdder({ title, salary, department_id });
         console.log(`The role of '${title}' has been established`);
 
 
@@ -177,16 +179,15 @@ const addRole = async () => {
         console.error("Error occurred:", error);
     }
 
-    startMenu();
+    return startMenu().then(() => {});
 };
 
 
 
 
-// Allows the user to add a new Employee
+// Allows the user to add a new Employee                        check
 const addEmployee = async () => {
     try {
-
 
 
       const [roles] = await getRoles();
@@ -196,21 +197,15 @@ const addEmployee = async () => {
       }));
   
 
-
-
-
-      const [employees] = await findAllEmployees();
-      const managerChoices = employees.map(({ id, forename, surname }) => ({
+      const [employees] = await getEmployees();
+      const roster = employees.map(({ id, forename, surname }) => ({
         name: `${forename} ${surname}`,
         value: id,
       }));
 
 
-
-
-      managerChoices.unshift({ name: "None", value: null });
+      roster.unshift({ name: "None", value: null });
   
-
 
       const answers = await inquirer.prompt([
         {
@@ -238,7 +233,7 @@ const addEmployee = async () => {
       ]);
   
 
-      await createEmployee(answers.forename, answers.surname, answers.role_id, answers.manager_id);
+      await employeeAdd(answers.forename, answers.surname, answers.role_id, answers.manager_id);
       console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
     
     
@@ -246,19 +241,17 @@ const addEmployee = async () => {
       console.error("Error occurred:", error);
     }
   
-    startMenu();
+    return startMenu().then(() => {});
   };
   
 
 
 
 // Allows user to update the Employee's role
-  const updateEmployeeRole = async () => {
+  const updateEmpRole = async () => {
     try {
 
-
-
-        const [employees] = await findAllEmployees();
+        const [employees] = await getEmployees();
         const employeeChoices = employees.map(({ id, forename, surname }) => ({
             name: `${forename} ${surname}`,
             value: id
@@ -289,7 +282,7 @@ const addEmployee = async () => {
             }
         ]);
 
-        await updateEmployeeRole(employeeId, roleId);
+        await updateEmpRole(employeeId, roleId);
 
         const selectedEmployee = employees.find(employee => employee.id === employeeId);
         const selectedRole = roles.find(role => role.id === roleId);
@@ -302,7 +295,7 @@ const addEmployee = async () => {
         console.error('Error occurred:', error);
     }
 
-    startMenu();
+    return startMenu().then(() => {});
 };
 
 
