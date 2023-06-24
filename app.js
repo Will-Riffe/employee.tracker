@@ -1,36 +1,38 @@
-const { prompt } = require("inquirer");
-const db = require("./db")
-
-
-
-
-
-
+const inquirer = require("inquirer");
+const db = require("./db");
 
 // Le start menu and choices
 const startMenu = () => {
-        prompt([
+    import("inquirer")
+      .then((inquirer) => {
+        inquirer
+          .prompt([
             {
-                type: 'list',
-                name: 'choice',
-                message: 'Choices Available: ',
-                choices: [
-                    "View All Departments",
-                    "View All Roles",
-                    "View All Employees",
-                    "Add Department",
-                    "Add a Role",
-                    "Add an Employee",
-                    "Update Employee Role",
-                    "Quit",
-                ]
+              type: 'list',
+              name: 'choice',
+              message: 'Choices Available: ',
+              choices: [
+                "View All Departments",
+                "View All Roles",
+                "View All Employees",
+                "Add Department",
+                "Add a Role",
+                "Add an Employee",
+                "Update Employee Role",
+                "Quit",
+              ]
             }
-        ])
-        .then(handleMenuChoice)
-        .catch((error) => {
+          ])
+          .then(handleMenuChoice)
+          .catch((error) => {
             console.error('Error occurred:', error);
-        });
-};
+          });
+      })
+      .catch((error) => {
+        console.error('Error occurred while importing inquirer:', error);
+      });
+  };
+  
 
 function handleMenuChoice(answers) {
     switch (answers.choice) {
@@ -70,92 +72,54 @@ function handleMenuChoice(answers) {
 
 startMenu();
 
-
-
-
-
-
-
-
-/*
-      These two functions are called upon in a couple of others
-      so I've put them here and called them in a few of their 
-      respective functions below
-
-const [roles] = await db.getRoles();
-const roleChoices = roles.map(({ id, title }) => ({
-    name: title,
-    value: id
-}));
-
-
-const [employees] = await db.getEmployees();
-const employeeChoices = employees.map(({ id, forename, surname }) => ({
-    name: `${forename} ${surname}`,
-    value: id
-}));
-
-
-
-
-*/
-
-
-
 // Displays available Dept's
-const viewDepartments = async () => {
+function viewDepartments() {
     try {
-        const [departments] = await db.getDepartments();
+        const departments = db.getDepartments()[0];
         console.table(departments);
-
     } catch (error) {
         console.error("Error: ", error);
     }
 
-    return startMenu().then(() => { });
-};
+    return startMenu().then(() => {});
+}
 
 
 
 
 // Displays available Roles
-const viewRoles = async () => {
+function viewRoles() {
     try {
-
-        const [roles] = await db.getRoles();
+        const roles = db.getRoles()[0];
         console.table(roles);
-
     } catch (error) {
         console.error("Error occurred:", error);
     }
 
-    return startMenu().then(() => { });
-};
-
+    return startMenu().then(() => {});
+}
 
 
 
 // Displays available Employees
-const viewEmployees = async () => {
+function viewEmployees() {
     try {
-
-        const [employees] = await db.getEmployees();
+        const employees = db.getEmployees()[0];
         console.table(employees);
-
     } catch (error) {
         console.error('Error occurred:', error);
     }
 
-    return startMenu().then(() => { });
-};
+    return startMenu().then(() => {});
+}
 
 
 
 
 // Allows the user to add a dept
-const addDepartment = async () => {
+function addDepartment() {
     try {
-        const { name } = await prompt([
+        const { name } = inquirer.prompt([
             {
                 type: "input",
                 name: "name",
@@ -163,24 +127,22 @@ const addDepartment = async () => {
             }
         ]);
 
-        await db.addDept(name);
+        db.addDept(name);
         console.log(`Department '${name}' established.`);
-
     } catch (error) {
         console.error('Error occurred:', error);
     }
 
-    return startMenu().then(() => { });
-};
-
+    return startMenu().then(() => {});
+}
 
 
 
 // Allows the user to add a new Role
-const addRole = async () => {
+function addRole() {
     try {
-        const [departments] = await db.getDepartments();
-        const { title, salary, department_id } = await prompt([
+        const departments = db.getDepartments()[0];
+        const { title, salary, department_id } = inquirer.prompt([
             {
                 type: "input",
                 name: "title",
@@ -199,35 +161,26 @@ const addRole = async () => {
             },
         ]);
 
-
-
-
-        await roleAdder({ title, salary, department_id });
+        roleAdder({ title, salary, department_id });
         console.log(`The role of '${title}' has been established`);
-
-
     } catch (error) {
         console.error("Error occurred:", error);
     }
 
-    return startMenu().then(() => { });
-};
+    return startMenu().then(() => {});
+}
 
 
 
-
-// Allows the user to add a new Employee
-const addEmployee = async () => {
+// Allows the user to add a new Employee                        check
+function addEmployee() {
     try {
-
-
-        roleChoices();
-        employeeChoices();
-
+        const roles = db.getRoles()[0];
+        const employees = db.getEmployees()[0];
+        const roster = [...employees];
         roster.unshift({ name: "None", value: null });
 
-
-        const answers = await prompt([
+        const answers = inquirer.prompt([
             {
                 type: "input",
                 name: "forename",
@@ -242,56 +195,49 @@ const addEmployee = async () => {
                 type: "list",
                 name: "role_id",
                 message: "What is their role here?",
-                choices: roleChoices,
+                choices: roles,
             },
             {
                 type: "list",
                 name: "manager_id",
                 message: "Who is their manager?",
-                choices: managerChoices,
+                choices: roster,
             },
         ]);
 
-
-        await db.employeeAdd(answers.forename, answers.surname, answers.role_id, answers.manager_id);
+        db.employeeAdd(answers.forename, answers.surname, answers.role_id, answers.manager_id);
         console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
-
-
     } catch (error) {
         console.error("Error occurred:", error);
     }
 
-    return startMenu().then(() => { });
-};
+    return startMenu().then(() => {});
+}
 
 
 
 
 // Allows user to update the Employee's role
-const updateEmpRole = async () => {
+function updateEmpRole() {
     try {
-
-
-        roleChoices();
-        employeeChoices();
-
-
-        const { employeeId, roleId } = await prompt([
+        const roles = db.getRoles()[0];
+        const employees = db.getEmployees()[0];
+        const { employeeId, roleId } = inquirer.prompt([
             {
                 type: "list",
                 name: "employeeId",
                 message: "Who's changing position?",
-                choices: employeeChoices
+                choices: employees
             },
             {
                 type: "list",
                 name: "roleId",
                 message: "What's their new role?",
-                choices: roleChoices
+                choices: roles
             }
         ]);
 
-        await updateEmpRole(employeeId, roleId);
+        updateEmpRole(employeeId, roleId);
 
         const selectedEmployee = employees.find(employee => employee.id === employeeId);
         const selectedRole = roles.find(role => role.id === roleId);
@@ -299,10 +245,9 @@ const updateEmpRole = async () => {
         const { title } = selectedRole;
 
         console.log(`${forename} ${surname}'s role is now a '${title}'.`);
-
     } catch (error) {
         console.error('Error occurred:', error);
     }
 
-    return startMenu().then(() => { });
-};
+    return startMenu().then(() => {});
+}
