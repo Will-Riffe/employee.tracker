@@ -6,28 +6,28 @@ const connection = require("./config/connection");
 // Le start menu and choices
 const startMenu = () => {
     inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'choice',
-          message: 'Choices Available: ',
-          choices: [
-            "View All Departments",
-            "View All Roles",
-            "View All Employees",
-            "Add Department",
-            "Add a Role",
-            "Add an Employee",
-            "Update Employee Role",
-            "Quit",
-          ]
-        }
-      ])
-      .then(handleMenuChoice)
-      .catch((error) => {
-        console.error('Error occurred:', error);
-      });
-  };
+        .prompt([
+            {
+                type: 'list',
+                name: 'choice',
+                message: 'Choices Available: ',
+                choices: [
+                    "View All Departments",
+                    "View All Roles",
+                    "View All Employees",
+                    "Add Department",
+                    "Add a Role",
+                    "Add an Employee",
+                    "Update Employee Role",
+                    "Quit",
+                ]
+            }
+        ])
+        .then(handleMenuChoice)
+        .catch((error) => {
+            console.error('Error occurred:', error);
+        });
+};
 
 function handleMenuChoice(answers) {
     switch (answers.choice) {
@@ -47,11 +47,11 @@ function handleMenuChoice(answers) {
             addDepartment();
             break;
 
-        case "Add Role":
+        case "Add a Role":
             addRole();
             break;
 
-        case "Add An Employee":
+        case "Add an Employee":
             addEmployee();
             break;
 
@@ -102,150 +102,284 @@ function viewRoles() {
 // Displays available Employees
 function viewEmployees() {
     try {
-        const employees = db.getEmployees()[0];
-        console.table(employees);
+        db.getEmployees().then((rows) => {
+            console.table(rows[0]);
+            startMenu();
+        })
     } catch (error) {
         console.error('Error occurred:', error);
     }
-
-    return startMenu().then(() => {});
 }
 
 
 
 
-// Allows the user to add a dept
+// Allows the user to add a department
 function addDepartment() {
-    try {
-        const { name } = inquirer.prompt([
+    inquirer
+        .prompt([
             {
-                type: "input",
+                type: 'input',
                 name: "name",
-                message: "What is this Department Called?"
+                message: "What is the name of the department?"
             }
-        ]);
-
-        db.addDept(name);
-        console.log(`Department '${name}' established.`);
-    } catch (error) {
-        console.error('Error occurred:', error);
-    }
-
-    return startMenu().then(() => {});
+        ])
+        .then(answers => {
+            let name = answers;
+            db.addDept(name)
+            console.log(`Department ${name.name} established`)
+            startMenu()
+        })
 }
 
 
 
 // Allows the user to add a new Role
 function addRole() {
-    try {
-        const departments = db.getDepartments()[0];
-        const { title, salary, department_id } = inquirer.prompt([
+    inquirer
+        .prompt([
             {
-                type: "input",
-                name: "title",
+                type: 'input',
+                name: "title", // Make sure the name matches the input field name
                 message: "What is this role called?",
             },
             {
-                type: "number",
+                type: 'input',
                 name: "salary",
                 message: "How much does this role pay?",
             },
             {
-                type: "list",
+                type: 'input',
                 name: "department_id",
-                message: "Choose the department for this role.",
-                choices: departments,
+                message: "Enter the department ID for this role.",
             },
-        ]);
+        ])
+        .then(answers => {
+            const { title, salary, department_id } = answers;
+            const role = { title, salary, department_id };
 
-        roleAdder({ title, salary, department_id });
-        console.log(`The role of '${title}' has been established`);
-    } catch (error) {
-        console.error("Error occurred:", error);
-    }
-
-    return startMenu().then(() => {});
+            db.roleAdder(role)
+                .then(() => {
+                    console.log(`Added ${role.title} to the database`);
+                    startMenu();
+                })
+                .catch(error => {
+                    console.error("Error occurred:", error);
+                });
+        })
+        .catch(error => {
+            console.error("Error occurred:", error);
+        });
 }
+
 
 
 
 // Allows the user to add a new Employee
 function addEmployee() {
     try {
-        const roles = db.getRoles()[0];
-        const employees = db.getEmployees()[0];
-        const roster = [...employees];
-        roster.unshift({ name: "None", value: null });
+        db.getRoles()
+            .then((roles) => {
+                db.getEmployees()
+                    .then((employees) => {
+                        const roster = [...employees];
+                        roster.unshift({ name: "None", value: null });
 
-        const answers = inquirer.prompt([
-            {
-                type: "input",
-                name: "forename",
-                message: "Enter the person's first name:",
-            },
-            {
-                type: "input",
-                name: "surname",
-                message: "Enter the person's last name:",
-            },
-            {
-                type: "list",
-                name: "role_id",
-                message: "What is their role here?",
-                choices: roles,
-            },
-            {
-                type: "list",
-                name: "manager_id",
-                message: "Who is their manager?",
-                choices: roster,
-            },
-        ]);
-
-        db.employeeAdd(answers.forename, answers.surname, answers.role_id, answers.manager_id);
-        console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
+                        inquirer.prompt([
+                            {
+                                type: "input",
+                                name: "forename",
+                                message: "Enter the person's first name:",
+                            },
+                            {
+                                type: "input",
+                                name: "surname",
+                                message: "Enter the person's last name:",
+                            },
+                            {
+                                type: "list",
+                                name: "role_id",
+                                message: "What is their role here?",
+                                choices: roles,
+                            },
+                            {
+                                type: "list",
+                                name: "manager_id",
+                                message: "Who is their manager?",
+                                choices: roster,
+                            },
+                        ])
+                            .then((answers) => {
+                                db.employeeAdd(answers)
+                                    .then(() => {
+                                        console.log(`'${answers.forename} ${answers.surname}' is now on the payroll.`);
+                                        startMenu();
+                                    })
+                                    .catch((error) => {
+                                        console.error("Error occurred:", error);
+                                    });
+                            })
+                            .catch((error) => {
+                                console.error("Error occurred:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Error occurred:", error);
+                    });
+            })
+            .catch((error) => {
+                console.error("Error occurred:", error);
+            });
     } catch (error) {
         console.error("Error occurred:", error);
     }
 
-    return startMenu().then(() => {});
+    return startMenu().then(() => { });
 }
 
 
 
 
 // Allows user to update the Employee's role
-function updateEmpRole() {
-    try {
-        const roles = db.getRoles()[0];
-        const employees = db.getEmployees()[0];
-        const { employeeId, roleId } = inquirer.prompt([
+function addEmployee() {
+    inquirer
+        .prompt([
             {
-                type: "list",
-                name: "employeeId",
-                message: "Who's changing position?",
-                choices: employees
+                name: "forename",
+                message: "What is the employee's first name?"
             },
             {
-                type: "list",
-                name: "roleId",
-                message: "What's their new role?",
-                choices: roles
+                name: "surname",
+                message: "What is the employee's last name?"
             }
-        ]);
+        ])
+        .then(res => {
+            let forename = res.forename;
+            let surname = res.surname;
 
-        updateEmpRole(employeeId, roleId);
+            db.getRoles()
+                .then(([rows]) => {
+                    let roles = rows;
+                    const roleChoices = roles.map(({ id, title }) => ({
+                        name: title,
+                        value: id
+                    }));
+                    inquirer
+                        .prompt({
+                            type: "list",
+                            name: "roleId",
+                            message: "What is the employee's role?",
+                            choices: roleChoices
+                        })
+                        .then(res => {
+                            let roleId = res.roleId;
 
-        const selectedEmployee = employees.find(employee => employee.id === employeeId);
-        const selectedRole = roles.find(role => role.id === roleId);
-        const { forename, surname } = selectedEmployee;
-        const { title } = selectedRole;
+                            db.getEmployees()
+                                .then(([rows]) => {
+                                    let employees = rows;
+                                    const managerChoices = employees.map(({ id, forename, surname }) => ({
+                                        name: `${forename} ${surname}`,
+                                        value: id
+                                    }));
 
-        console.log(`${forename} ${surname}'s role is now a '${title}'.`);
-    } catch (error) {
-        console.error('Error occurred:', error);
-    }
+                                    managerChoices.unshift({ name: "None", value: null });
+                                    inquirer
+                                        .prompt({
+                                            type: "list",
+                                            name: "managerId",
+                                            message: "Who is the employee's manager?",
+                                            choices: managerChoices
+                                        })
+                                        .then(res => {
+                                            let employee = {
+                                                manager_id: res.managerId,
+                                                role_id: roleId,
+                                                forename: forename,
+                                                surname: surname
+                                            };
 
-    return startMenu().then(() => {});
+                                            db.employeeAdd(employee)
+                                                .then(() => {
+                                                    console.log(`Added ${forename} ${surname} to the database`);
+                                                    startMenu();
+                                                })
+                                                .catch(error => {
+                                                    console.error("Error occurred:", error);
+                                                    startMenu();
+                                                });
+                                        })
+                                        .catch(error => {
+                                            console.error("Error occurred:", error);
+                                            startMenu();
+                                        });
+                                })
+                                .catch(error => {
+                                    console.error("Error occurred:", error);
+                                    startMenu();
+                                });
+                        })
+                        .catch(error => {
+                            console.error("Error occurred:", error);
+                            startMenu();
+                        });
+                })
+                .catch(error => {
+                    console.error("Error occurred:", error);
+                    startMenu();
+                });
+        })
+        .catch(error => {
+            console.error("Error occurred:", error);
+            startMenu();
+        });
+}
+
+
+
+function  updateEmpRole() {
+    db.getEmployees()
+        .then(([rows]) => {
+            let employees = rows;
+            const employeeChoices = employees.map(({ id, forename, surname }) => ({
+                name: `${forename} ${surname}`,
+                value: id
+            }));
+            return db.getRoles()
+                .then(([rows]) => {
+                    let roles = rows;
+                    const roleChoices = roles.map(({ id, title }) => ({
+                        name: title,
+                        value: id
+                    }));
+                    return inquirer.prompt([
+                        {
+                            type: "list",
+                            name: "employeeId",
+                            message: "Who's changing position?",
+                            choices: employeeChoices
+                        },
+                        {
+                            type: "list",
+                            name: "roleId",
+                            message: "What's their new role?",
+                            choices: roleChoices
+                        }
+                    ])
+                        .then(({ employeeId, roleId }) => {
+                            return db.updateEmployeeRole(employeeId, roleId)
+                                .then(() => {
+                                    const selectedEmployee = employees.find(employee => employee.id === employeeId);
+                                    const selectedRole = roles.find(role => role.id === roleId);
+                                    const { forename, surname } = selectedEmployee;
+                                    const { title } = selectedRole;
+                                    console.log(`${forename} ${surname}'s role is now '${title}'.`);
+                                })
+                                .then(() => startMenu());
+                        });
+                });
+        })
+        .catch(error => {
+            console.error("Error occurred:", error);
+            loadPrompts();
+        });
 }

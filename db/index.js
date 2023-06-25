@@ -44,13 +44,11 @@ class DB {
   }
 
   addDept(department) {
-    const query = "INSERT INTO department SET ?";
-    return this.connection.promise().query(query, department);
+    return this.connection.promise().query("INSERT INTO department SET ?", department);
   }
 
   roleAdder(role) {
-    const query = "INSERT INTO role SET ?";
-    return this.connection.promise().query(query, role);
+    return this.connection.promise().query("INSERT INTO role SET ?", role);
   }
 
   findAllPossibleManagers(employeeId) {
@@ -69,9 +67,9 @@ class DB {
 
   employeeAdd(employee) {
     const query = "INSERT INTO employee SET ?";
-    return this.connection.promise().query(query, employee);
+    return this.connection.promise().query(query, [employee]);
   }
-
+  
   removeEmployee(employeeId) {
     const query = "DELETE FROM employee WHERE id = ?";
     return this.connection.promise().query(query, employeeId);
