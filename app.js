@@ -1,39 +1,33 @@
-const inquirer = require("inquirer");
+const inquirer = require('inquirer');
 const db = require("./db");
-const connection = require("./connection");
+const connection = require("./config/connection");
+
 
 // Le start menu and choices
 const startMenu = () => {
-    import("inquirer")
-      .then((inquirer) => {
-        inquirer
-          .prompt([
-            {
-              type: 'list',
-              name: 'choice',
-              message: 'Choices Available: ',
-              choices: [
-                "View All Departments",
-                "View All Roles",
-                "View All Employees",
-                "Add Department",
-                "Add a Role",
-                "Add an Employee",
-                "Update Employee Role",
-                "Quit",
-              ]
-            }
-          ])
-          .then(handleMenuChoice)
-          .catch((error) => {
-            console.error('Error occurred:', error);
-          });
-      })
+    inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'choice',
+          message: 'Choices Available: ',
+          choices: [
+            "View All Departments",
+            "View All Roles",
+            "View All Employees",
+            "Add Department",
+            "Add a Role",
+            "Add an Employee",
+            "Update Employee Role",
+            "Quit",
+          ]
+        }
+      ])
+      .then(handleMenuChoice)
       .catch((error) => {
-        console.error('Error occurred while importing inquirer:', error);
+        console.error('Error occurred:', error);
       });
   };
-  
 
 function handleMenuChoice(answers) {
     switch (answers.choice) {
@@ -73,17 +67,20 @@ function handleMenuChoice(answers) {
 
 startMenu();
 
-// Displays available Dept's
+
+
+
 function viewDepartments() {
     try {
-        const departments = db.getDepartments()[0];
-        console.table(departments);
+        db.getDepartments().then((departments) => {
+            console.table(departments[0]);
+            startMenu();
+        });
     } catch (error) {
         console.error("Error: ", error);
     }
-
-    return startMenu().then(() => {});
 }
+
 
 
 
@@ -91,13 +88,13 @@ function viewDepartments() {
 // Displays available Roles
 function viewRoles() {
     try {
-        const roles = db.getRoles()[0];
-        console.table(roles);
+        db.getRoles().then((rows) => {
+            console.table(rows[0]);
+            startMenu();
+        })
     } catch (error) {
         console.error("Error occurred:", error);
     }
-
-    return startMenu().then(() => {});
 }
 
 
